@@ -23,6 +23,8 @@ PROC     = proc
 PROCINC  = INCLUDE=$(ORAINC)
 PROCFLAG = sqlcheck=full def_sqlcode=yes code=ansi_c lines=yes
 
+INC = -I./dbug/inc -I/usr/local/include/cjson
+
 ALL_LIBS= $(DB_LIBS) $(OS_LIBS)
 
 CFLAGS += -DDBUG_ON
@@ -36,10 +38,10 @@ target  = server client
 all:$(target)
 
 server:server.o ora.o util.o
-	$(QUIET_PROC) $(CFLAGS) -I./dbug/inc -I/usr/local/include/cjson $(src) -o $@ -l$(lib) $(ALL_LIBS) -I$(ORAINC) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -lPbDebug
+	$(QUIET_PROC) $(CFLAGS) -I./dbug/inc -I/usr/local/include/cjson $< -o $@ -l$(lib) $(ALL_LIBS) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -lPbDebug
 
 client:client.o ora.o util.o
-	$(QUIET_PROC) $(CFLAGS) -I./dbug/inc -I/usr/local/include/cjson $(src) -o $@ -l$(lib) $(ALL_LIBS) -I$(ORAINC) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -lPbDebug
+	$(QUIET_PROC) $(CFLAGS) -I./dbug/inc -I/usr/local/include/cjson $< -o $@ -l$(lib) $(ALL_LIBS) -I$(ORAINC) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -lPbDebug
 
 cli:
 	$(QUIET_EXEC) $(PWD)/$@
@@ -50,6 +52,9 @@ ser:
 ora.c:ora.pc
 	$(PROC) $(PROCINC) $(PROCFLAG) INCLUDE=./dbug/inc INAME=ora.pc ONAME=ora.c
 
+.c.o:
+	$(QUIET_PROC) $(CFLAGS) $(INC) -I$(ORAINC) -c $*.c
+
 tags:$(src)
 	ctags *.c *.h
 
@@ -57,3 +62,4 @@ tags:$(src)
 clean:
 	$(QUIET_REMOVE) -f $(target)
 	$(QUIET_REMOVE) -f core.*
+	$(QUIET_REMOVE) -f *.o
