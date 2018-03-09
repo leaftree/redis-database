@@ -29,7 +29,9 @@ ALL_LIBS= $(DB_LIBS) $(OS_LIBS)
 
 CFLAGS += -DDBUG_ON
 
-src  = server.c client.c ora.c util.c
+src  = server.c ora.c util.c redisop.c
+serverObj = server.o ora.o util.o redisop.o
+clientObj = client.o ora.o util.o redisop.o
 
 lib = hiredis
 
@@ -37,11 +39,11 @@ target  = server client
 
 all:$(target)
 
-server:server.o ora.o util.o
-	$(QUIET_PROC) $(CFLAGS) -I./dbug/inc -I/usr/local/include/cjson $< -o $@ -l$(lib) $(ALL_LIBS) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -lPbDebug
+server:$(serverObj)
+	$(QUIET_PROC) $(CFLAGS) $(serverObj) $(INC) -o $@ -l$(lib) $(ALL_LIBS) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -ldbug
 
-client:client.o ora.o util.o
-	$(QUIET_PROC) $(CFLAGS) -I./dbug/inc -I/usr/local/include/cjson $< -o $@ -l$(lib) $(ALL_LIBS) -I$(ORAINC) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -lPbDebug
+client:$(clientObj)
+	$(QUIET_PROC) $(CFLAGS) $(clientObj) $(INC) -o $@ -l$(lib) $(ALL_LIBS) -I$(ORAINC) -L/usr/lib -lhiredis -L/usr/local/lib -lcjson -lm -L. -ldbug
 
 cli:
 	$(QUIET_EXEC) $(PWD)/$@
@@ -50,7 +52,7 @@ ser:
 	$(QUIET_EXEC) $(PWD)/$@
 
 ora.c:ora.pc
-	$(PROC) $(PROCINC) $(PROCFLAG) INCLUDE=./dbug/inc INAME=ora.pc ONAME=ora.c
+	$(PROC) $(PROCINC) $(PROCFLAG) INCLUDE=/usr/local/include/cjson INAME=ora.pc ONAME=ora.c
 
 .c.o:
 	$(QUIET_PROC) $(CFLAGS) $(INC) -I$(ORAINC) -c $*.c

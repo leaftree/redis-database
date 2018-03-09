@@ -136,16 +136,16 @@ typedef struct { unsigned short len; unsigned char arr[1]; } varchar;
 /* cud (compilation unit data) array */
 static const short sqlcud0[] =
 {12,4130,852,0,0,
-5,0,0,1,0,0,24,151,0,0,1,1,0,1,0,1,9,0,0,
-24,0,0,2,0,0,31,155,0,0,0,0,0,1,0,
-39,0,0,3,0,0,29,160,0,0,0,0,0,1,0,
-54,0,0,0,0,0,27,245,0,0,4,4,0,1,0,1,9,0,0,1,9,0,0,1,10,0,0,1,10,0,0,
-85,0,0,5,0,0,30,263,0,0,0,0,0,1,0,
-100,0,0,6,0,0,17,351,0,0,1,1,0,1,0,1,5,0,0,
-119,0,0,6,0,0,11,353,0,0,1,1,0,1,0,1,32,0,0,
-138,0,0,6,0,0,15,377,0,0,0,0,0,1,0,
-153,0,0,6,0,0,20,472,0,0,1,1,0,1,0,3,32,0,0,
-172,0,0,6,0,0,14,506,0,0,1,0,0,1,0,2,32,0,0,
+5,0,0,1,0,0,24,153,0,0,1,1,0,1,0,1,9,0,0,
+24,0,0,2,0,0,31,157,0,0,0,0,0,1,0,
+39,0,0,3,0,0,29,162,0,0,0,0,0,1,0,
+54,0,0,0,0,0,27,247,0,0,4,4,0,1,0,1,9,0,0,1,9,0,0,1,10,0,0,1,10,0,0,
+85,0,0,5,0,0,30,265,0,0,0,0,0,1,0,
+100,0,0,6,0,0,17,352,0,0,1,1,0,1,0,1,5,0,0,
+119,0,0,6,0,0,11,354,0,0,1,1,0,1,0,1,32,0,0,
+138,0,0,6,0,0,15,378,0,0,0,0,0,1,0,
+153,0,0,6,0,0,20,473,0,0,1,1,0,1,0,3,32,0,0,
+172,0,0,6,0,0,14,507,0,0,1,0,0,1,0,2,32,0,0,
 };
 
 
@@ -779,6 +779,8 @@ static int isSelectStatment(char *stmt)
 
 static int allocDescriptors(db_reader *reader, int max_col_cnt, int max_vname_len, int max_iname_len)
 {
+	DBUG_ENTER(__func__);
+
 	int i;
 	struct Cprivate *priv = reader->statment;
 
@@ -786,14 +788,14 @@ static int allocDescriptors(db_reader *reader, int max_col_cnt, int max_vname_le
 					max_vname_len, max_iname_len)) == (SQLDA *) 0)
 	{
 		dbSetError(reader, "Cannot allocate memory for bind descriptor.");
-		return(DBO_FAIL); 
+		DBUG_RETURN(DBO_FAIL); 
 	}
 
 	if ((priv->select_dp = SQLSQLDAAlloc (SQL_SINGLE_RCTX, max_col_cnt,
 					max_vname_len, max_iname_len)) == (SQLDA *) 0)
 	{
 		dbSetError(reader, "Cannot allocate memory for select descriptor.");
-		return(DBO_FAIL); 
+		DBUG_RETURN(DBO_FAIL); 
 	}
 
 	priv->select_dp->N = max_col_cnt;
@@ -804,164 +806,164 @@ static int allocDescriptors(db_reader *reader, int max_col_cnt, int max_vname_le
 		priv->bind_dp->V[i]   = (char *) malloc(sizeof(char));
 		priv->select_dp->V[i] = (char *) malloc(sizeof(char));
 	}
-	return(DBO_SUCC); 
+	DBUG_RETURN(DBO_SUCC); 
 }
 
 static int runNonQueryStatment(DBDriver *driver, char *statment)
 {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
-#line 146 "ora.pc"
+#line 148 "ora.pc"
 
 	/* varchar caSqlStmt[ORA_MAX_SQL_LEN]; */ 
 struct { unsigned short len; unsigned char arr[3000]; } caSqlStmt;
-#line 147 "ora.pc"
+#line 149 "ora.pc"
 
 	/* EXEC SQL END DECLARE SECTION; */ 
-#line 148 "ora.pc"
+#line 150 "ora.pc"
 
 
 	caSqlStmt.len = sprintf((char*)caSqlStmt.arr, "%s", statment);
 	/* EXEC SQL EXECUTE IMMEDIATE :caSqlStmt; */ 
-#line 151 "ora.pc"
+#line 153 "ora.pc"
 
 {
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  struct sqlexd sqlstm;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqlvsn = 12;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.arrsiz = 1;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqladtp = &sqladt;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqltdsp = &sqltds;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.stmt = "";
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.iters = (unsigned int  )1;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.offset = (unsigned int  )5;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.cud = sqlcud0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqlety = (unsigned short)4352;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.occurs = (unsigned int  )0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqhstv[0] = (unsigned char  *)&caSqlStmt;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqhstl[0] = (unsigned long )3002;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqhsts[0] = (         int  )0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqindv[0] = (         short *)0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqinds[0] = (         int  )0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqharm[0] = (unsigned long )0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqadto[0] = (unsigned short )0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqtdso[0] = (unsigned short )0;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqphsv = sqlstm.sqhstv;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqphsl = sqlstm.sqhstl;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqphss = sqlstm.sqhsts;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqpind = sqlstm.sqindv;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqpins = sqlstm.sqinds;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqparm = sqlstm.sqharm;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqparc = sqlstm.sqharc;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqpadto = sqlstm.sqadto;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlstm.sqptdso = sqlstm.sqtdso;
-#line 151 "ora.pc"
+#line 153 "ora.pc"
  sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 151 "ora.pc"
+#line 153 "ora.pc"
 }
 
-#line 151 "ora.pc"
+#line 153 "ora.pc"
 
 	if(SQLCODE != IAPSUCC)
 	{
 		dbSetORAError(driver);
 		/* EXEC SQL ROLLBACK WORK; */ 
-#line 155 "ora.pc"
+#line 157 "ora.pc"
 
 {
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   struct sqlexd sqlstm;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.sqlvsn = 12;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.arrsiz = 1;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.sqladtp = &sqladt;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.sqltdsp = &sqltds;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.iters = (unsigned int  )1;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.offset = (unsigned int  )24;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.cud = sqlcud0;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.sqlety = (unsigned short)4352;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlstm.occurs = (unsigned int  )0;
-#line 155 "ora.pc"
+#line 157 "ora.pc"
   sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 155 "ora.pc"
+#line 157 "ora.pc"
 }
 
-#line 155 "ora.pc"
+#line 157 "ora.pc"
 
 		return(IAPFAIL);
 	}
 	else
 	{
 		/* EXEC SQL COMMIT WORK; */ 
-#line 160 "ora.pc"
+#line 162 "ora.pc"
 
 {
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   struct sqlexd sqlstm;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.sqlvsn = 12;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.arrsiz = 1;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.sqladtp = &sqladt;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.sqltdsp = &sqltds;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.iters = (unsigned int  )1;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.offset = (unsigned int  )39;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.cud = sqlcud0;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.sqlety = (unsigned short)4352;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlstm.occurs = (unsigned int  )0;
-#line 160 "ora.pc"
+#line 162 "ora.pc"
   sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 160 "ora.pc"
+#line 162 "ora.pc"
 }
 
-#line 160 "ora.pc"
+#line 162 "ora.pc"
 
 		if(SQLCODE != IAPSUCC)
 		{
@@ -1032,22 +1034,22 @@ int DBConnection(DBDriver *driver)
 	DBUG_PRINT("DEBUG SOURCE CODE: ", ("[%s(%d)-%s]", __FILE__, __LINE__, __func__));
 
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
-#line 229 "ora.pc"
+#line 231 "ora.pc"
 
 	/* varchar     dbpwd[21]; */ 
 struct { unsigned short len; unsigned char arr[21]; } dbpwd;
-#line 230 "ora.pc"
+#line 232 "ora.pc"
 
 	/* varchar     dbname[21]; */ 
 struct { unsigned short len; unsigned char arr[21]; } dbname;
-#line 231 "ora.pc"
+#line 233 "ora.pc"
 
 	/* varchar     dbuserid[21]; */ 
 struct { unsigned short len; unsigned char arr[21]; } dbuserid;
-#line 232 "ora.pc"
+#line 234 "ora.pc"
 
 	/* EXEC SQL END DECLARE SECTION; */ 
-#line 233 "ora.pc"
+#line 235 "ora.pc"
 
 
 	if(driver == NULL)
@@ -1061,97 +1063,97 @@ struct { unsigned short len; unsigned char arr[21]; } dbuserid;
 	dbpwd.len = strlen(driver->password);
 
 	/* EXEC SQL CONNECT :dbuserid IDENTIFIED BY :dbpwd; */ 
-#line 245 "ora.pc"
+#line 247 "ora.pc"
 
 {
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  struct sqlexd sqlstm;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlvsn = 12;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.arrsiz = 4;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqladtp = &sqladt;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqltdsp = &sqltds;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.iters = (unsigned int  )10;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.offset = (unsigned int  )54;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.cud = sqlcud0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlety = (unsigned short)4352;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.occurs = (unsigned int  )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqhstv[0] = (unsigned char  *)&dbuserid;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqhstl[0] = (unsigned long )23;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqhsts[0] = (         int  )23;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqindv[0] = (         short *)0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqinds[0] = (         int  )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqharm[0] = (unsigned long )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqadto[0] = (unsigned short )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqtdso[0] = (unsigned short )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqhstv[1] = (unsigned char  *)&dbpwd;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqhstl[1] = (unsigned long )23;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqhsts[1] = (         int  )23;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqindv[1] = (         short *)0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqinds[1] = (         int  )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqharm[1] = (unsigned long )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqadto[1] = (unsigned short )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqtdso[1] = (unsigned short )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqphsv = sqlstm.sqhstv;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqphsl = sqlstm.sqhstl;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqphss = sqlstm.sqhsts;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqpind = sqlstm.sqindv;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqpins = sqlstm.sqinds;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqparm = sqlstm.sqharm;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqparc = sqlstm.sqharc;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqpadto = sqlstm.sqadto;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqptdso = sqlstm.sqtdso;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlcmax = (unsigned int )100;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlcmin = (unsigned int )2;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlcincr = (unsigned int )1;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlctimeout = (unsigned int )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlstm.sqlcnowait = (unsigned int )0;
-#line 245 "ora.pc"
+#line 247 "ora.pc"
  sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 245 "ora.pc"
+#line 247 "ora.pc"
 }
 
-#line 245 "ora.pc"
+#line 247 "ora.pc"
 
 	if( SQLCODE != IAPSUCC )
 	{
@@ -1171,47 +1173,47 @@ int DBCloseConnection(DBDriver *driver)
 		DBUG_RETURN(DBO_FAIL);
 
 	/* EXEC SQL COMMIT WORK RELEASE; */ 
-#line 263 "ora.pc"
+#line 265 "ora.pc"
 
 {
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  struct sqlexd sqlstm;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.sqlvsn = 12;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.arrsiz = 4;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.sqladtp = &sqladt;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.sqltdsp = &sqltds;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.iters = (unsigned int  )1;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.offset = (unsigned int  )85;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.cud = sqlcud0;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.sqlety = (unsigned short)4352;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlstm.occurs = (unsigned int  )0;
-#line 263 "ora.pc"
+#line 265 "ora.pc"
  sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 263 "ora.pc"
+#line 265 "ora.pc"
 }
 
-#line 263 "ora.pc"
+#line 265 "ora.pc"
 
 	if( SQLCODE != IAPSUCC )
 	{
 		dbSetORAError(driver);
 
-		fprintf(stdout, "LINE:%d DBCLOSEDATABASE END UN0ESSFULLY!!!The uncommitted transaction hasn't committed!!!\n",__LINE__);
+		fprintf(stdout, "LINE:%d DBCLOSEDATABASE END UNSUCCESSFULLY!!!The uncommitted transaction hasn't committed!!!\n",__LINE__);
 		DBUG_RETURN(DBO_FAIL);
 	}
 
-	fprintf(stdout, "LINE:%d DBCLOSEDATABASE 0ESSFULLY END!!!\n",__LINE__);
+	fprintf(stdout, "LINE:%d DBCLOSEDATABASE SUCCESSFULLY END!!!\n",__LINE__);
 	DBUG_RETURN(DBO_SUCC);
 }
 
@@ -1234,7 +1236,6 @@ int DBStmtFree(DBDriver *driver)
 	}
 
 	mFree(driver->json_string);
-	mFree(driver->statment);
 
 	DBUG_RETURN(DBO_SUCC);
 }
@@ -1250,14 +1251,14 @@ int DBExecute(DBDriver *driver, char *statment)
 	SQLDA *select_dp = NULL;
 
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
-#line 310 "ora.pc"
+#line 311 "ora.pc"
 
 	char caSqlStmt[ORA_MAX_SQL_LEN];
 	/* EXEC SQL VAR caSqlStmt IS STRING(ORA_MAX_SQL_LEN); */ 
-#line 312 "ora.pc"
+#line 313 "ora.pc"
 
 	/* EXEC SQL END DECLARE SECTION; */ 
-#line 313 "ora.pc"
+#line 314 "ora.pc"
 
 
 	if(driver == NULL)
@@ -1297,149 +1298,149 @@ int DBExecute(DBDriver *driver, char *statment)
 	select_dp = priv->select_dp;
 
 	/* EXEC SQL PREPARE S FROM :caSqlStmt; */ 
-#line 351 "ora.pc"
-
-{
-#line 351 "ora.pc"
- struct sqlexd sqlstm;
-#line 351 "ora.pc"
- sqlstm.sqlvsn = 12;
-#line 351 "ora.pc"
- sqlstm.arrsiz = 4;
-#line 351 "ora.pc"
- sqlstm.sqladtp = &sqladt;
-#line 351 "ora.pc"
- sqlstm.sqltdsp = &sqltds;
-#line 351 "ora.pc"
- sqlstm.stmt = "";
-#line 351 "ora.pc"
- sqlstm.iters = (unsigned int  )1;
-#line 351 "ora.pc"
- sqlstm.offset = (unsigned int  )100;
-#line 351 "ora.pc"
- sqlstm.cud = sqlcud0;
-#line 351 "ora.pc"
- sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 351 "ora.pc"
- sqlstm.sqlety = (unsigned short)4352;
-#line 351 "ora.pc"
- sqlstm.occurs = (unsigned int  )0;
-#line 351 "ora.pc"
- sqlstm.sqhstv[0] = (unsigned char  *)caSqlStmt;
-#line 351 "ora.pc"
- sqlstm.sqhstl[0] = (unsigned long )3000;
-#line 351 "ora.pc"
- sqlstm.sqhsts[0] = (         int  )0;
-#line 351 "ora.pc"
- sqlstm.sqindv[0] = (         short *)0;
-#line 351 "ora.pc"
- sqlstm.sqinds[0] = (         int  )0;
-#line 351 "ora.pc"
- sqlstm.sqharm[0] = (unsigned long )0;
-#line 351 "ora.pc"
- sqlstm.sqadto[0] = (unsigned short )0;
-#line 351 "ora.pc"
- sqlstm.sqtdso[0] = (unsigned short )0;
-#line 351 "ora.pc"
- sqlstm.sqphsv = sqlstm.sqhstv;
-#line 351 "ora.pc"
- sqlstm.sqphsl = sqlstm.sqhstl;
-#line 351 "ora.pc"
- sqlstm.sqphss = sqlstm.sqhsts;
-#line 351 "ora.pc"
- sqlstm.sqpind = sqlstm.sqindv;
-#line 351 "ora.pc"
- sqlstm.sqpins = sqlstm.sqinds;
-#line 351 "ora.pc"
- sqlstm.sqparm = sqlstm.sqharm;
-#line 351 "ora.pc"
- sqlstm.sqparc = sqlstm.sqharc;
-#line 351 "ora.pc"
- sqlstm.sqpadto = sqlstm.sqadto;
-#line 351 "ora.pc"
- sqlstm.sqptdso = sqlstm.sqtdso;
-#line 351 "ora.pc"
- sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 351 "ora.pc"
-}
-
-#line 351 "ora.pc"
-
-	/* EXEC SQL DECLARE C CURSOR FOR S; */ 
 #line 352 "ora.pc"
 
-	/* EXEC SQL OPEN C USING DESCRIPTOR bind_dp; */ 
-#line 353 "ora.pc"
-
 {
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  struct sqlexd sqlstm;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqlvsn = 12;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.arrsiz = 4;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqladtp = &sqladt;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqltdsp = &sqltds;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.stmt = "";
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.iters = (unsigned int  )1;
-#line 353 "ora.pc"
- sqlstm.offset = (unsigned int  )119;
-#line 353 "ora.pc"
- sqlstm.selerr = (unsigned short)1;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
+ sqlstm.offset = (unsigned int  )100;
+#line 352 "ora.pc"
  sqlstm.cud = sqlcud0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqlety = (unsigned short)4352;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.occurs = (unsigned int  )0;
-#line 353 "ora.pc"
- sqlstm.sqcmod = (unsigned int )0;
-#line 353 "ora.pc"
- sqlstm.sqhstv[0] = (unsigned char  *)bind_dp;
-#line 353 "ora.pc"
- sqlstm.sqhstl[0] = (unsigned long )0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
+ sqlstm.sqhstv[0] = (unsigned char  *)caSqlStmt;
+#line 352 "ora.pc"
+ sqlstm.sqhstl[0] = (unsigned long )3000;
+#line 352 "ora.pc"
  sqlstm.sqhsts[0] = (         int  )0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqindv[0] = (         short *)0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqinds[0] = (         int  )0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqharm[0] = (unsigned long )0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqadto[0] = (unsigned short )0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqtdso[0] = (unsigned short )0;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqphsv = sqlstm.sqhstv;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqphsl = sqlstm.sqhstl;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqphss = sqlstm.sqhsts;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqpind = sqlstm.sqindv;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqpins = sqlstm.sqinds;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqparm = sqlstm.sqharm;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqparc = sqlstm.sqharc;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqpadto = sqlstm.sqadto;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlstm.sqptdso = sqlstm.sqtdso;
-#line 353 "ora.pc"
+#line 352 "ora.pc"
  sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 353 "ora.pc"
+#line 352 "ora.pc"
 }
 
+#line 352 "ora.pc"
+
+	/* EXEC SQL DECLARE C CURSOR FOR S; */ 
 #line 353 "ora.pc"
+
+	/* EXEC SQL OPEN C USING DESCRIPTOR bind_dp; */ 
+#line 354 "ora.pc"
+
+{
+#line 354 "ora.pc"
+ struct sqlexd sqlstm;
+#line 354 "ora.pc"
+ sqlstm.sqlvsn = 12;
+#line 354 "ora.pc"
+ sqlstm.arrsiz = 4;
+#line 354 "ora.pc"
+ sqlstm.sqladtp = &sqladt;
+#line 354 "ora.pc"
+ sqlstm.sqltdsp = &sqltds;
+#line 354 "ora.pc"
+ sqlstm.stmt = "";
+#line 354 "ora.pc"
+ sqlstm.iters = (unsigned int  )1;
+#line 354 "ora.pc"
+ sqlstm.offset = (unsigned int  )119;
+#line 354 "ora.pc"
+ sqlstm.selerr = (unsigned short)1;
+#line 354 "ora.pc"
+ sqlstm.cud = sqlcud0;
+#line 354 "ora.pc"
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+#line 354 "ora.pc"
+ sqlstm.sqlety = (unsigned short)4352;
+#line 354 "ora.pc"
+ sqlstm.occurs = (unsigned int  )0;
+#line 354 "ora.pc"
+ sqlstm.sqcmod = (unsigned int )0;
+#line 354 "ora.pc"
+ sqlstm.sqhstv[0] = (unsigned char  *)bind_dp;
+#line 354 "ora.pc"
+ sqlstm.sqhstl[0] = (unsigned long )0;
+#line 354 "ora.pc"
+ sqlstm.sqhsts[0] = (         int  )0;
+#line 354 "ora.pc"
+ sqlstm.sqindv[0] = (         short *)0;
+#line 354 "ora.pc"
+ sqlstm.sqinds[0] = (         int  )0;
+#line 354 "ora.pc"
+ sqlstm.sqharm[0] = (unsigned long )0;
+#line 354 "ora.pc"
+ sqlstm.sqadto[0] = (unsigned short )0;
+#line 354 "ora.pc"
+ sqlstm.sqtdso[0] = (unsigned short )0;
+#line 354 "ora.pc"
+ sqlstm.sqphsv = sqlstm.sqhstv;
+#line 354 "ora.pc"
+ sqlstm.sqphsl = sqlstm.sqhstl;
+#line 354 "ora.pc"
+ sqlstm.sqphss = sqlstm.sqhsts;
+#line 354 "ora.pc"
+ sqlstm.sqpind = sqlstm.sqindv;
+#line 354 "ora.pc"
+ sqlstm.sqpins = sqlstm.sqinds;
+#line 354 "ora.pc"
+ sqlstm.sqparm = sqlstm.sqharm;
+#line 354 "ora.pc"
+ sqlstm.sqparc = sqlstm.sqharc;
+#line 354 "ora.pc"
+ sqlstm.sqpadto = sqlstm.sqadto;
+#line 354 "ora.pc"
+ sqlstm.sqptdso = sqlstm.sqtdso;
+#line 354 "ora.pc"
+ sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+#line 354 "ora.pc"
+}
+
+#line 354 "ora.pc"
 
 
 	if(SQLCODE != IAPSUCC)
@@ -1465,37 +1466,37 @@ int DBExecute(DBDriver *driver, char *statment)
 	SQLSQLDAFree(SQL_SINGLE_RCTX, bind_dp);
 	SQLSQLDAFree(SQL_SINGLE_RCTX, select_dp);
 	/* EXEC SQL CLOSE C; */ 
-#line 377 "ora.pc"
+#line 378 "ora.pc"
 
 {
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  struct sqlexd sqlstm;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.sqlvsn = 12;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.arrsiz = 4;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.sqladtp = &sqladt;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.sqltdsp = &sqltds;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.iters = (unsigned int  )1;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.offset = (unsigned int  )138;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.cud = sqlcud0;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.sqlety = (unsigned short)4352;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlstm.occurs = (unsigned int  )0;
-#line 377 "ora.pc"
+#line 378 "ora.pc"
  sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 377 "ora.pc"
+#line 378 "ora.pc"
 }
 
-#line 377 "ora.pc"
+#line 378 "ora.pc"
 
 
 	priv->bind_dp = NULL;
@@ -1592,71 +1593,71 @@ int fetchQueryStatmentResult(DBDriver *driver)
 	select_dp->N = ORA_SQL_MAX_ITEM_NUM;
 
 	/* EXEC SQL DESCRIBE SELECT LIST FOR S INTO select_dp; */ 
-#line 472 "ora.pc"
+#line 473 "ora.pc"
 
 {
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  struct sqlexd sqlstm;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqlvsn = 12;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.arrsiz = 4;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqladtp = &sqladt;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqltdsp = &sqltds;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.iters = (unsigned int  )1;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.offset = (unsigned int  )153;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.cud = sqlcud0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqlety = (unsigned short)4352;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.occurs = (unsigned int  )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqhstv[0] = (unsigned char  *)select_dp;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqhstl[0] = (unsigned long )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqhsts[0] = (         int  )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqindv[0] = (         short *)0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqinds[0] = (         int  )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqharm[0] = (unsigned long )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqadto[0] = (unsigned short )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqtdso[0] = (unsigned short )0;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqphsv = sqlstm.sqhstv;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqphsl = sqlstm.sqhstl;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqphss = sqlstm.sqhsts;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqpind = sqlstm.sqindv;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqpins = sqlstm.sqinds;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqparm = sqlstm.sqharm;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqparc = sqlstm.sqharc;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqpadto = sqlstm.sqadto;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlstm.sqptdso = sqlstm.sqtdso;
-#line 472 "ora.pc"
+#line 473 "ora.pc"
  sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 472 "ora.pc"
+#line 473 "ora.pc"
 }
 
-#line 472 "ora.pc"
+#line 473 "ora.pc"
 
 	if (select_dp->F < 0)
 	{
@@ -1692,77 +1693,77 @@ int fetchQueryStatmentResult(DBDriver *driver)
 	for (;sqlca.sqlerrd[2]<ORA_MAX_ROW_COUNT;)
 	{
 		/* EXEC SQL FETCH C USING DESCRIPTOR select_dp; */ 
-#line 506 "ora.pc"
+#line 507 "ora.pc"
 
 {
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   struct sqlexd sqlstm;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqlvsn = 12;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.arrsiz = 4;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqladtp = &sqladt;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqltdsp = &sqltds;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.iters = (unsigned int  )1;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.offset = (unsigned int  )172;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.selerr = (unsigned short)1;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.cud = sqlcud0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqlest = (unsigned char  *)&sqlca;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqlety = (unsigned short)4352;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.occurs = (unsigned int  )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqfoff = (         int )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqfmod = (unsigned int )2;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqhstv[0] = (unsigned char  *)select_dp;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqhstl[0] = (unsigned long )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqhsts[0] = (         int  )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqindv[0] = (         short *)0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqinds[0] = (         int  )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqharm[0] = (unsigned long )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqadto[0] = (unsigned short )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqtdso[0] = (unsigned short )0;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqphsv = sqlstm.sqhstv;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqphsl = sqlstm.sqhstl;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqphss = sqlstm.sqhsts;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqpind = sqlstm.sqindv;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqpins = sqlstm.sqinds;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqparm = sqlstm.sqharm;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqparc = sqlstm.sqharc;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqpadto = sqlstm.sqadto;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlstm.sqptdso = sqlstm.sqtdso;
-#line 506 "ora.pc"
+#line 507 "ora.pc"
   sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-#line 506 "ora.pc"
+#line 507 "ora.pc"
 }
 
-#line 506 "ora.pc"
+#line 507 "ora.pc"
 
 		if(SQLCODE==1403)
 		{
@@ -1807,6 +1808,7 @@ int fetchQueryStatmentResult(DBDriver *driver)
 
 	cJSON_AddItemToObject(root, "app", cJSON_CreateString("oracle client"));
 	cJSON_AddItemToObject(root, "type", cJSON_CreateString("response"));
+	cJSON_AddItemToObject(root, "sqltype", cJSON_CreateString("select"));
 	cJSON_AddItemToObject(root, "eflag",
 			driver->ecode?cJSON_CreateFalse():cJSON_CreateTrue());
 	cJSON_AddItemToObject(root, "message",
@@ -1819,7 +1821,7 @@ int fetchQueryStatmentResult(DBDriver *driver)
 	cJSON_AddItemToObject(root, "field", field);
 	cJSON_AddItemToObject(root, "result", result);
 
-	DBUG_PRINT("Response", ("%s", cJSON_PrintUnformatted(root)));
+	driver->json_string = cJSON_PrintUnformatted(root);
 	cJSON_free(root);
 
 	DBUG_RETURN(IAPSUCC);

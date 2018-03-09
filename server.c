@@ -14,153 +14,146 @@
 #include <string.h>
 #include <sys/prctl.h>
 #include <limits.h>
+#include <signal.h>
 
 #include <hiredis.h>
 #include "cJSON.h"
 #include "db.h"
 
-#define return_if_fail(expr, title) do{                                 \
-	if (expr) { } else {                                                  \
-		fprintf(stdout, "[%s(%d)-%s] %s: %s\n", __FILE__, __LINE__, __func__, title, #expr); \
-		return;                                                             \
-	};}while(0)
+const static int rport = 6379;
 
-#define return_val_if_fail(expr, value, title) do{                      \
-	if (expr) { } else {                                                  \
-		fprintf(stdout, "[%s(%d)-%s] %s: %s\n", __FILE__, __LINE__, __func__, title, #expr); \
-		return(value);                                                      \
-	};}while(0)
-
-redisContext *defaultRedisHandle = NULL;
-
-redisContext *Redis(char *host, unsigned short int port, unsigned int timeo)
+static void exit_sig(int sig)
 {
-	char hostname[64] = "";
-	struct timeval timeout = { timeo, 0 };
-	redisContext *c = NULL;
-
-	snprintf(hostname, sizeof(hostname), host?host:"127.0.0.1");
-
-	if(timeo)
-		c = redisConnectWithTimeout(hostname, port, timeout);
-	else
-		c = redisConnect(hostname, port);
-
-	if (c == NULL )
-	{
-		return NULL;
-	}
-	else if(c->err)
-	{
-		printf("Connection error: %s\n", c->errstr);
-		redisFree(c);
-	}
-
-	defaultRedisHandle = c;
-
-	return c;
+	printf("Exit system\n");
+	exit(0);
 }
 
-int RedisAuth(redisContext *redis, char *password)
+static void access_signal()
 {
-	redisReply *reply = NULL;
-	int ret = -1;
-	static const char ok[] = "OK";
-	static const char invalid[] = "invalid password";
-	static const char notset[] = "no password is set";
-
-	if(redis && password)
-	{
-		reply = redisCommand(redis, "AUTH %s", password);
-		if(reply)
-		{
-			if(reply->type == REDIS_REPLY_STATUS && !strcasecmp(reply->str, ok))
-			{
-				ret = 0;
-			}
-			else if(reply->type == REDIS_REPLY_ERROR)
-			{
-				if(strstr(reply->str, invalid))
-					ret = -1;
-				else if(strstr(reply->str, notset))
-					ret = 0;
-			}
-			freeReplyObject(reply);
-		}
-	}
-	return ret;
+	signal(SIGQUIT, exit_sig);
 }
 
 int main()
 {
+	DBUG_ENTER(__func__);
+
 	DBUG_PUSH ("d:t:O");
 	DBUG_PROCESS ("测试程序");
-
-	DBUG_ENTER(__func__);
-	int i;
-	int port = 6379;
 	prctl(PR_SET_NAME, "测试程序");
+
+	access_signal();
 
 	//daemon(1, 1);
 
-	DBDriver *driver = DBHEnvNew(NULL, "fzlc50db@afc", "fzlc50db");
-	if(driver == NULL)
+	DBDriver *dbo = DBHEnvNew(NULL, "fzlc50db@afc", "fzlc50db");
+	if(dbo == NULL)
 	{
 		DBUG_PRINT("DBHEnvNew", ("Create handle env fail"));
 		DBUG_RETURN(-1);
 	}
-	if(DBO_SUCC != DBConnection(driver))
+	if(DBO_SUCC != DBConnection(dbo))
 	{
-		DBUG_PRINT("DBConnection", ("%s", driver->errstr));
+		DBUG_PRINT("DBConnection", ("%s", dbo->errstr));
 		DBUG_RETURN(-1);
 	}
 
-	redisContext *c = Redis(NULL, port, 0);
-	if(!c)
+	defaultRedisHandle = RedisConnection(NULL, rport, 0);
+	if(!defaultRedisHandle)
 	{
 		DBUG_PRINT("Redis", ("Create redis connect fail"));
 		DBUG_RETURN(-1);
 	}
-	if(RedisAuth(c, "123kbc,./"))
+	if(RedisAuth(defaultRedisHandle, "123kbc,./"))
 	{
 		DBUG_PRINT("Redis", ("Auth fail"));
 		DBUG_RETURN(-1);
 	}
 
-	while(1)
+	DBHandle *handle = DBServerInit(DBAPI_SYNC|DBAPI_TIMEO, 100);
+	if(NULL==handle)
 	{
-		DBHandle *handle = DBAPPInit(DBAPI_SYNC|DBAPI_TIMEO, 1);
-		if(NULL==handle)
-		{
-			DBUG_PRINT("DBAPPHandle", ("New fail"));
-			DBUG_RETURN(-1);
-		}
-
-		i = DBAPPExecute(handle, "SELECT * FROM BASI_STATION_INFO");
-		if(i)
-		{
-			fprintf(stdout, "%s\n", handle->errstr);
-			//return -1;
-		}
-
-		time_t t1 = time(NULL);
-		if(DBO_SUCC != DBExecute(driver, "select * from dev_modbus_status"))
-		{
-			DBUG_PRINT("DBExecute", ("%s", driver->errstr));
-			DBUG_RETURN(-1);
-		}
-		if(DBO_SUCC != DBStmtFree(driver))
-		{
-			DBUG_PRINT("DBStmtFree", ("%s", driver->errstr));
-			DBUG_RETURN(-1);
-		}
-		time_t t2 = time(NULL);
-		DBUG_PRINT("timestamp", ("%d", t2-t1));
-
+		DBUG_PRINT("DBAPPHandle", ("New fail"));
+		DBUG_RETURN(-1);
 	}
-	DBCloseConnection(driver);
-	DBReleaseHEnv(&driver);
-	redisFree(c);
+
+	int loop=1000;
+	while(loop--)
+	{
+		sleep(1);
+		if(DBServerRecvRequest(handle))
+		{
+			DBUG_PRINT("DBServerRecvRequest", ("%s", handle->errstr));
+			continue;
+		}
+		DBUG_PRINT("SQL-REQUEST", ("%s", cJSON_PrintUnformatted(handle->root)));
+
+		cJSON *field = cJSON_GetObjectItem(handle->root, "type");
+		if(field == NULL || field->type != cJSON_String || strncasecmp(field->valuestring, "REQUEST", strlen("REQUEST")))
+		{
+			DBUG_PRINT("parse object", ("It's not a request message:%s", field->string));
+			continue;
+		}
+
+		DBUG_PRINT("SQL", ("%s", cJSON_GetObjectItem(handle->root, "sql")->valuestring));
+		field = cJSON_GetObjectItem(handle->root, "sql");
+		if(field == NULL)
+		{
+			DBUG_PRINT("parse object", ("Can't found sql"));
+			continue;
+		}
+		char *stmt = cJSON_GetStringValue(field);
+
+		field = cJSON_GetObjectItem(handle->root, "rchannel");
+		if(field == NULL)
+		{
+			DBUG_PRINT("parse object", ("Can't found recive channle to response"));
+			continue;
+		}
+		handle->send_channel = strdup(field->valuestring);
+
+		field = cJSON_GetObjectItem(handle->root, "sync");
+		if(field == NULL)
+		{
+			DBUG_PRINT("parse object", ("Can found sync"));
+		}
+		else
+		{
+			if(field->type == cJSON_True)
+				handle->sync = DBAPI_SYNC;
+			else
+				handle->sync = DBAPI_ASYNC;
+		}
+
+		DBUG_PRINT("SqlStmt", ("%s", stmt));
+
+		if(DBO_SUCC != DBExecute(dbo, stmt))
+		{
+			dbapp_gen_error_response_json_string(handle, dbo);
+
+			//DBUG_PRINT("DBExecute", ("%s", dbo->errstr));
+			//DBUG_RETURN(-1);
+		}
+		else
+		{
+			handle->json_string = dbo->json_string;
+		}
+
+		//handle->send_channel = strdup(defaultQueue);
+		if(DBServerSendReponse(handle))
+		{
+			DBUG_PRINT("DBServerSendReponse", ("%s", handle->errstr));
+		}
+
+		if(DBO_SUCC != DBStmtFree(dbo))
+		{
+			DBUG_PRINT("DBStmtFree", ("%s", dbo->errstr));
+			DBUG_RETURN(-1);
+		}
+	}
+
+	DBCloseConnection(dbo);
+	DBReleaseHEnv(&dbo);
+	redisFree(defaultRedisHandle);
 
 	DBUG_RETURN(0);
 }

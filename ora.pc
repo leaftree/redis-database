@@ -113,6 +113,8 @@ static int isSelectStatment(char *stmt)
 
 static int allocDescriptors(db_reader *reader, int max_col_cnt, int max_vname_len, int max_iname_len)
 {
+	DBUG_ENTER(__func__);
+
 	int i;
 	struct Cprivate *priv = reader->statment;
 
@@ -120,14 +122,14 @@ static int allocDescriptors(db_reader *reader, int max_col_cnt, int max_vname_le
 					max_vname_len, max_iname_len)) == (SQLDA *) 0)
 	{
 		dbSetError(reader, "Cannot allocate memory for bind descriptor.");
-		return(DBO_FAIL); 
+		DBUG_RETURN(DBO_FAIL); 
 	}
 
 	if ((priv->select_dp = SQLSQLDAAlloc (SQL_SINGLE_RCTX, max_col_cnt,
 					max_vname_len, max_iname_len)) == (SQLDA *) 0)
 	{
 		dbSetError(reader, "Cannot allocate memory for select descriptor.");
-		return(DBO_FAIL); 
+		DBUG_RETURN(DBO_FAIL); 
 	}
 
 	priv->select_dp->N = max_col_cnt;
@@ -138,7 +140,7 @@ static int allocDescriptors(db_reader *reader, int max_col_cnt, int max_vname_le
 		priv->bind_dp->V[i]   = (char *) malloc(sizeof(char));
 		priv->select_dp->V[i] = (char *) malloc(sizeof(char));
 	}
-	return(DBO_SUCC); 
+	DBUG_RETURN(DBO_SUCC); 
 }
 
 static int runNonQueryStatment(DBDriver *driver, char *statment)
@@ -265,11 +267,11 @@ int DBCloseConnection(DBDriver *driver)
 	{
 		dbSetORAError(driver);
 
-		fprintf(stdout, "LINE:%d DBCLOSEDATABASE END UN0ESSFULLY!!!The uncommitted transaction hasn't committed!!!\n",__LINE__);
+		fprintf(stdout, "LINE:%d DBCLOSEDATABASE END UNSUCCESSFULLY!!!The uncommitted transaction hasn't committed!!!\n",__LINE__);
 		DBUG_RETURN(DBO_FAIL);
 	}
 
-	fprintf(stdout, "LINE:%d DBCLOSEDATABASE 0ESSFULLY END!!!\n",__LINE__);
+	fprintf(stdout, "LINE:%d DBCLOSEDATABASE SUCCESSFULLY END!!!\n",__LINE__);
 	DBUG_RETURN(DBO_SUCC);
 }
 
@@ -292,7 +294,6 @@ int DBStmtFree(DBDriver *driver)
 	}
 
 	mFree(driver->json_string);
-	mFree(driver->statment);
 
 	DBUG_RETURN(DBO_SUCC);
 }
@@ -547,6 +548,7 @@ int fetchQueryStatmentResult(DBDriver *driver)
 
 	cJSON_AddItemToObject(root, "app", cJSON_CreateString("oracle client"));
 	cJSON_AddItemToObject(root, "type", cJSON_CreateString("response"));
+	cJSON_AddItemToObject(root, "sqltype", cJSON_CreateString("select"));
 	cJSON_AddItemToObject(root, "eflag",
 			driver->ecode?cJSON_CreateFalse():cJSON_CreateTrue());
 	cJSON_AddItemToObject(root, "message",
@@ -559,7 +561,7 @@ int fetchQueryStatmentResult(DBDriver *driver)
 	cJSON_AddItemToObject(root, "field", field);
 	cJSON_AddItemToObject(root, "result", result);
 
-	DBUG_PRINT("Response", ("%s", cJSON_PrintUnformatted(root)));
+	driver->json_string = cJSON_PrintUnformatted(root);
 	cJSON_free(root);
 
 	DBUG_RETURN(IAPSUCC);

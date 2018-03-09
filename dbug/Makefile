@@ -15,12 +15,12 @@ BINRARY_PATH := .
 
 OBJS := dbug.o
 
-PBLIB=libPbDebug.so
+PBLIB=libdbug.so
 
 all: $(PBLIB) 
 
 $(PBLIB):$(OBJS)
-	@$(CC) $(CFLAGS) -shared -fPIC -o $(BINRARY_PATH)/$@ $^
+	$(CC) $(CFLAGS) -shared -fPIC -o $(BINRARY_PATH)/$@ $^
 	-@$(RM) $(OBJS)
 
 .c.o:

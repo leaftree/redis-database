@@ -12,6 +12,7 @@
 #define __DB_H__
 
 #include <time.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -50,7 +51,9 @@ extern redisContext *defaultRedisHandle;
 //
 #define DBAPI_ASYNC 0
 #define DBAPI_SYNC 1
-#define DBAPI_TIMEO 4
+#define DBAPI_TIMEO 2
+#define DBAPI_CLIENT 4
+#define DBAPI_SERVER 8
 
 //
 // 默认发送+接收队列名称
@@ -97,7 +100,8 @@ typedef struct __DBHandle {
 
 __BEGIN_DECLS
 
-DBHandle *DBAPPInit(int flag, ...);
+DBHandle *DBClientInit(int flag, ...);
+DBHandle *DBServerInit(int flag, ...);
 DBHandle *DBAPPFree(DBHandle *handle);
 int DBAPPExecute(DBHandle *handle, char *stmt);
 
